@@ -18,13 +18,19 @@ interface Props {
 }
 
 export default function HouseCard({ house }: Props) {
-  // Extract colors from the string
-  const colorParts = house.houseColours?.split(" and ") || ["#ccc", "#eee"];
+  const colorParts = house.houseColours
+    ?.split(" and ")
+    .map((c) => c.trim().toLowerCase()) || ["gray", "white"];
   const color1 = getColorHex(colorParts[0]);
   const color2 = getColorHex(colorParts[1] || colorParts[0]);
 
   return (
-    <LinearGradient colors={[color1, color2]} style={styles.card}>
+    <LinearGradient
+      colors={[color1, color2]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1.8 }}
+      style={styles.card}
+    >
       <Text style={styles.name}>{house.name}</Text>
       <Text style={styles.meta}>Founder: {house.founder}</Text>
       <Text style={styles.meta}>Animal: {house.animal}</Text>
@@ -37,42 +43,46 @@ export default function HouseCard({ house }: Props) {
 
 function getColorHex(colorName: string): string {
   const colors: Record<string, string> = {
-    Scarlet: "#B22222",
-    Gold: "#FFD700",
-    Blue: "#1E90FF",
-    Bronze: "#CD7F32",
-    Yellow: "#FFD60A",
-    Black: "#2D3436",
-    Green: "#228B22",
-    Silver: "#C0C0C0",
-    Red: "#FF0000",
+    scarlet: "#B22222",
+    gold: "#FFD700",
+    navy: "#000080",
+    bronze: "#814509ff",
+    yellow: "#FFD60A",
+    black: "#1e2122ff",
+    green: "#1A472A",
+    silver: "#C0C0C0",
+    red: "#FF0000",
+    blue: "#1E90FF",
+    gray: "#4E4E4E",
+    white: "#FFFFFF",
   };
-
-  return colors[colorName.trim()] || "#4e2e54ff";
+  return colors[colorName.toLowerCase()] || "#4e2e54ff";
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
+    borderRadius: 16,
+    padding: 20,
+    marginVertical: 10,
     marginHorizontal: 12,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
   },
   name: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: 24,
+    fontWeight: "700",
     color: "#fff",
-    marginBottom: 6,
+    marginBottom: 10,
+    textShadowColor: "rgba(0,0,0,0.5)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
   },
   meta: {
-    fontSize: 15,
+    fontSize: 16,
     color: "#fff",
-    marginTop: 2,
+    marginBottom: 4,
   },
 });
-

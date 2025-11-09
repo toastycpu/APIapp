@@ -1,67 +1,90 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, ActivityIndicator, StyleSheet } from "react-native";
+import React, { useRef, useEffect, useState } from "react";
+import { Text, TouchableOpacity, StyleSheet, Animated } from "react-native";
+import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 
-export default function CharactersScreen() {
-  const [characters, setCharacters] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function StartScreen() {
+  const router = useRouter();
 
-
-  const fetchCharactersData = async () => {
-    try {
-      const response = await fetch("https://wizard-world-api.herokuapp.com/Characters");
-      const data = await response.json();
-      console.log("Characters:", data.length);
-      setCharacters(data.slice(0, 30));
-    } catch (error) {
-      console.error("Error fetching characters:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [showWizardText, setShowWizardText] = useState(false);
 
   useEffect(() => {
-    fetchCharactersData();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 1200,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
-  if (loading) {
-    // Loading indicator
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#6c5ce7" />
-        <Text style={styles.loadingText}>Loading Hogwarts characters...</Text>
-      </View>
-    );
-  }
+  const handleWizardPress = () => {
+    setShowWizardText(true);
+    setTimeout(() => setShowWizardText(false), 9000);
+  };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={characters}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.name}>{item.firstName} {item.lastName}</Text>
-            <Text style={styles.house}>{item.house || "No House"}</Text>
-          </View>
-        )}
-      />
-    </View>
+    <LinearGradient
+      colors={['#0e1855ff', '#805ca7ff']} 
+      style={styles.gradient}
+    >
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <Text style={styles.title}>Wizard Handbook</Text>
+
+        <TouchableOpacity style={styles.button} onPress={handleWizardPress}>
+          <Text style={styles.buttonText}>Are you a Wizard?</Text>
+        </TouchableOpacity>
+
+        {showWizardText && <Text style={styles.wizardText}>🪄 You are a wizard! shh don't let the muggles know 🪄</Text>}
+      </Animated.View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: "#26085bff", padding: 10 },
-  loadingContainer: {flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#fff" },
-  loadingText: {marginTop: 10, fontSize: 16, color: "#555" },
-  card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 10,
-    elevation: 2,
+  gradient: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  name: {fontSize: 18, fontWeight: "bold", color: "#2d3436" },
-  house: {fontSize: 14, color: "#4e6871ff" },
+  container: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
+  title: {
+    fontSize: 34,
+    fontWeight: "700",
+    color: "#FFD700",
+    marginBottom: 50,
+    textAlign: "center",
+    fontFamily: "CinzelBold",
+  },
+  button: {
+    backgroundColor: "#481c7aff",
+    paddingVertical: 16,
+    paddingHorizontal: 28,
+    borderRadius: 12,
+    minHeight: 44,
+    minWidth: 160,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#FFD700",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+  },
+  buttonText: {
+    color: "#f9f8f2ff",
+    fontSize: 18,
+    fontWeight: "600",
+    fontFamily: "CinzelBold",
+  },
+  wizardText: {
+    marginTop: 20,
+    fontSize: 20,
+    color: "#fcfbf6ff",
+    textAlign: "center",
+    fontFamily: "CinzelBold",
+  },
 });
 
